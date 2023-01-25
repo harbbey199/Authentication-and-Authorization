@@ -38,7 +38,7 @@ namespace Paylode_Auth.Controllers
                 return BadRequest("Invalid Input");
             }
             var registration = await _authentication.Register(registerDto);
-            return Ok($"successfully registered{registration}");
+            return Ok(registration);
         }
     }
 }

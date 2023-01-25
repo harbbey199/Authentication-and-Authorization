@@ -23,22 +23,39 @@ namespace Infrastructures
             _configuration = configuration;
             _appContext = appContext;
         }
+
+
+
+        // Login Method which calls the Create Method after login
         public async Task<string> Login(LoginModel user)
         {
-          var  currentuser = await _appContext.users.FirstOrDefaultAsync(x => x.Username == user.UserName);
-            if (currentuser is null)
+            try
             {
-                return ("Invalid Input");
-            }
+                var currentuser = await _appContext.users.FirstOrDefaultAsync(x => x.Username == user.UserName);
+                if (currentuser is null)
+                {
+                    return ("Invalid Credentials");
+                }
 
-            if (user.UserName == currentuser.Username && user.Password == currentuser.Password)
-            {
-                var tokenString = CreateToken(currentuser);
-               return ($"you are signed in/n {tokenString}");
+                if (user.UserName == currentuser.Username && user.Password == currentuser.Password)
+                {
+                    var tokenString = CreateToken(currentuser);
+                    return ($"you are signed in: {tokenString}");
+                }
+                return "invalid credentials";
+
             }
-            return "invalid credentials" ;
+            catch (Exception)
+            {
+                return "Internal Server Error";
+            }
+         
 
         }
+
+
+
+        // Helper Method for creation of Tokens
         public string CreateToken(UserModel user)
         {
             var authClaims = new List<Claim>
@@ -60,6 +77,9 @@ namespace Infrastructures
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        // Register Method to register as eligible user.
         public async Task<string>Register(RegisterDto registerDto)
         {
             try
